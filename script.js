@@ -93,57 +93,6 @@ const projectOrder = [
   "file-under-disco",
 ];
 
-const mixedImages = [];
-const groupedImages = projectOrder.map((project) => images.filter(([itemProject]) => itemProject === project));
-let hasImages = true;
-
-while (hasImages) {
-  hasImages = false;
-  groupedImages.forEach((group) => {
-    const item = group.shift();
-    if (item) {
-      mixedImages.push(item);
-      hasImages = true;
-    }
-  });
-}
-
-mixedImages.forEach(([project, projectLabel, title, src, shape, type = "image"], index) => {
-  const button = document.createElement("button");
-  const media = type === "video" ? document.createElement("video") : document.createElement("img");
-  const label = document.createElement("span");
-  const optimizedSrc = type === "video" ? src : optimizedSource(src);
-
-  button.className = `piece ${shape}`;
-  button.type = "button";
-  button.dataset.project = project;
-  button.dataset.projectLabel = projectLabel;
-  button.dataset.title = title;
-  button.dataset.src = optimizedSrc;
-  button.dataset.type = type;
-  button.style.animationDelay = `${Math.min(index * 28, 620)}ms`;
-
-  if (type === "video") {
-    media.dataset.src = optimizedSrc;
-    media.muted = true;
-    media.loop = true;
-    media.autoplay = true;
-    media.playsInline = true;
-    media.preload = "none";
-    media.setAttribute("aria-label", `${title}, ${projectLabel}`);
-  } else {
-    media.src = optimizedSrc;
-    media.alt = `${title}, ${projectLabel}`;
-    media.loading = "eager";
-    media.decoding = "async";
-  }
-
-  label.textContent = projectLabel;
-
-  button.append(media, label);
-  gallery.append(button);
-});
-
 const videoObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     const video = entry.target;
@@ -158,7 +107,88 @@ const videoObserver = new IntersectionObserver((entries) => {
   });
 }, { rootMargin: "500px 0px" });
 
-document.querySelectorAll(".piece video").forEach((video) => videoObserver.observe(video));
+const shuffle = (items) => {
+  const shuffled = [...items];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+};
+
+const mixedItems = () => {
+  const groups = shuffle(projectOrder).map((project) => (
+    shuffle(images.filter(([itemProject]) => itemProject === project))
+  ));
+  const items = [];
+  let hasItems = true;
+
+  while (hasItems) {
+    hasItems = false;
+    groups.forEach((group) => {
+      const item = group.shift();
+      if (item) {
+        items.push(item);
+        hasItems = true;
+      }
+    });
+  }
+
+  return items;
+};
+
+const renderGallery = () => {
+  document.querySelectorAll(".piece video").forEach((video) => videoObserver.unobserve(video));
+  gallery.replaceChildren();
+
+  mixedItems().forEach(([project, projectLabel, title, src, shape, type = "image"], index) => {
+    const button = document.createElement("button");
+    const media = type === "video" ? document.createElement("video") : document.createElement("img");
+    const label = document.createElement("span");
+    const optimizedSrc = type === "video" ? src : optimizedSource(src);
+
+    button.className = `piece ${shape}`;
+    button.type = "button";
+    button.dataset.project = project;
+    button.dataset.projectLabel = projectLabel;
+    button.dataset.title = title;
+    button.dataset.src = optimizedSrc;
+    button.dataset.type = type;
+    button.style.animationDelay = `${Math.min(index * 18, 360)}ms`;
+
+    if (type === "video") {
+      media.dataset.src = optimizedSrc;
+      media.muted = true;
+      media.loop = true;
+      media.autoplay = true;
+      media.playsInline = true;
+      media.preload = "none";
+      media.setAttribute("aria-label", `${title}, ${projectLabel}`);
+    } else {
+      media.src = optimizedSrc;
+      media.alt = `${title}, ${projectLabel}`;
+      media.loading = "eager";
+      media.decoding = "async";
+    }
+
+    label.textContent = projectLabel;
+
+    button.append(media, label);
+    gallery.append(button);
+
+    if (type === "video") {
+      videoObserver.observe(media);
+    }
+  });
+};
+
+renderGallery();
+
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    renderGallery();
+  }
+});
 
 filters.forEach((filter) => {
   filter.addEventListener("click", () => {
