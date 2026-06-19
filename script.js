@@ -70,6 +70,7 @@ const gallery = document.querySelector(".gallery");
 const filters = document.querySelectorAll(".filter");
 const lightbox = document.querySelector(".lightbox");
 const lightboxImage = lightbox.querySelector("img");
+const lightboxVideo = lightbox.querySelector("video");
 const lightboxProject = lightbox.querySelector("span");
 const lightboxTitle = lightbox.querySelector("strong");
 const closeButton = lightbox.querySelector(".close");
@@ -211,19 +212,34 @@ gallery.addEventListener("click", (event) => {
   const piece = event.target.closest(".piece");
   if (!piece) return;
 
-  if (piece.dataset.type === "video") return;
+  const isVideo = piece.dataset.type === "video";
 
-  lightboxImage.src = piece.dataset.src;
-  lightboxImage.alt = `${piece.dataset.title}, ${piece.dataset.projectLabel}`;
+  lightbox.classList.toggle("is-video", isVideo);
+  lightboxImage.src = isVideo ? "" : piece.dataset.src;
+  lightboxImage.alt = isVideo ? "" : `${piece.dataset.title}, ${piece.dataset.projectLabel}`;
+  lightboxVideo.src = isVideo ? piece.dataset.src : "";
+  lightboxVideo.muted = true;
   lightboxProject.textContent = piece.dataset.projectLabel;
   lightboxTitle.textContent = piece.dataset.title;
   lightbox.showModal();
+
+  if (isVideo) {
+    lightboxVideo.play().catch(() => {});
+  }
 });
 
-closeButton.addEventListener("click", () => lightbox.close());
+const closeLightbox = () => {
+  lightbox.close();
+  lightboxVideo.pause();
+  lightboxVideo.removeAttribute("src");
+  lightboxVideo.load();
+  lightbox.classList.remove("is-video");
+};
+
+closeButton.addEventListener("click", closeLightbox);
 
 lightbox.addEventListener("click", (event) => {
   if (event.target === lightbox) {
-    lightbox.close();
+    closeLightbox();
   }
 });

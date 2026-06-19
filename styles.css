@@ -215,13 +215,26 @@ main {
   backdrop-filter: blur(10px);
 }
 
-.lightbox img {
+.lightbox img,
+.lightbox video {
   display: block;
   width: 100%;
   max-height: 82vh;
   object-fit: contain;
   background: rgba(255, 255, 255, 0.04);
   box-shadow: 0 28px 90px rgba(0, 0, 0, 0.48);
+}
+
+.lightbox video {
+  display: none;
+}
+
+.lightbox.is-video img {
+  display: none;
+}
+
+.lightbox.is-video video {
+  display: block;
 }
 
 .close {
