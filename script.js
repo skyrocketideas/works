@@ -63,6 +63,7 @@ const images = [
   ["mane-cuts", "Mane Cuts", "Mane Cuts Singles", "assets/videos/4k_16x9_mane_cuts_singles_3_smaller_smaller.mp4", "wide", "video"],
   ["mane-cuts", "Mane Cuts", "Mane Cuts Story", "assets/videos/9x16_mane_cuts_singles_6_smaller.mp4", "tall", "video"],
   ["roar-groove", "Roar Groove", "RGRV024 Story", "assets/videos/9x16_rgrv024_ig_story_smaller.mp4", "tall", "video"],
+  ["home-page", "Home Page", "Home Page Hero", "assets/videos/1920x1080_home_page_hero_11_smaller.mp4", "wide", "video"],
 ];
 
 const gallery = document.querySelector(".gallery");
@@ -86,6 +87,7 @@ const projectOrder = [
   "robertsons",
   "f1",
   "mane-cuts",
+  "home-page",
   "start-left-security",
   "autodisco",
   "file-under-disco",
