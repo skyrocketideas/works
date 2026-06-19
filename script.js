@@ -50,6 +50,19 @@ const images = [
   ["vinyl", "Vinyl", "Vinyl 04", "assets/vinyl/0039786084_10.jpg", "square"],
   ["vinyl", "Vinyl", "Vinyl 05", "assets/vinyl/0043456088_10.jpg", "square"],
   ["vinyl", "Vinyl", "Vinyl 06", "assets/vinyl/0044921120_10.jpg", "square"],
+  ["amicasa", "Amicasa", "Amicasa Loop", "assets/videos/1080x1080_amicasa_loop_smaller.mp4", "square", "video"],
+  ["roar-groove", "Roar Groove", "Roar Groove Loop", "assets/videos/1080x1080_roar_groove_loop_smaller.mp4", "square", "video"],
+  ["sub-club", "Sub Club", "Sub Club Loop", "assets/videos/1080x1080_sub_club_loop_smaller.mp4", "square", "video"],
+  ["top-buzz", "Top Buzz", "Top Buzz Loop", "assets/videos/1080x1080_top_buzz_loop_smaller.mp4", "square", "video"],
+  ["fan", "FAN", "FAN Hero", "assets/videos/1920x1080_FAN_hero_smaller.mp4", "wide", "video"],
+  ["amicasa", "Amicasa", "Amicasa Film", "assets/videos/1920x1080_amicasa_smaller.mp4", "wide", "video"],
+  ["sub-club", "Sub Club", "Sub Club Film", "assets/videos/1920x1080_sub_club_smaller.mp4", "wide", "video"],
+  ["f1", "F1", "3D Phone", "assets/videos/f1_3d_phone.mp4", "tall", "video"],
+  ["robertsons", "Robertsons", "Robertsons Film", "assets/videos/1920x1080_robertsons_smaller.mp4", "wide", "video"],
+  ["start-left-security", "Start Left Security", "Start Left Security Film", "assets/videos/1920x1080_start_left_security_smaller.mp4", "wide", "video"],
+  ["mane-cuts", "Mane Cuts", "Mane Cuts Singles", "assets/videos/4k_16x9_mane_cuts_singles_3_smaller_smaller.mp4", "wide", "video"],
+  ["mane-cuts", "Mane Cuts", "Mane Cuts Story", "assets/videos/9x16_mane_cuts_singles_6_smaller.mp4", "tall", "video"],
+  ["roar-groove", "Roar Groove", "RGRV024 Story", "assets/videos/9x16_rgrv024_ig_story_smaller.mp4", "tall", "video"],
 ];
 
 const gallery = document.querySelector(".gallery");
@@ -69,6 +82,11 @@ const projectOrder = [
   "amicasa",
   "rocket-factory",
   "vinyl",
+  "fan",
+  "robertsons",
+  "f1",
+  "mane-cuts",
+  "start-left-security",
   "autodisco",
   "file-under-disco",
 ];
@@ -88,11 +106,11 @@ while (hasImages) {
   });
 }
 
-mixedImages.forEach(([project, projectLabel, title, src, shape], index) => {
+mixedImages.forEach(([project, projectLabel, title, src, shape, type = "image"], index) => {
   const button = document.createElement("button");
-  const image = document.createElement("img");
+  const media = type === "video" ? document.createElement("video") : document.createElement("img");
   const label = document.createElement("span");
-  const optimizedSrc = optimizedSource(src);
+  const optimizedSrc = type === "video" ? src : optimizedSource(src);
 
   button.className = `piece ${shape}`;
   button.type = "button";
@@ -100,17 +118,45 @@ mixedImages.forEach(([project, projectLabel, title, src, shape], index) => {
   button.dataset.projectLabel = projectLabel;
   button.dataset.title = title;
   button.dataset.src = optimizedSrc;
+  button.dataset.type = type;
   button.style.animationDelay = `${Math.min(index * 28, 620)}ms`;
 
-  image.src = optimizedSrc;
-  image.alt = `${title}, ${projectLabel}`;
-  image.loading = "eager";
-  image.decoding = "async";
+  if (type === "video") {
+    media.dataset.src = optimizedSrc;
+    media.muted = true;
+    media.loop = true;
+    media.autoplay = true;
+    media.playsInline = true;
+    media.preload = "none";
+    media.setAttribute("aria-label", `${title}, ${projectLabel}`);
+  } else {
+    media.src = optimizedSrc;
+    media.alt = `${title}, ${projectLabel}`;
+    media.loading = "eager";
+    media.decoding = "async";
+  }
+
   label.textContent = projectLabel;
 
-  button.append(image, label);
+  button.append(media, label);
   gallery.append(button);
 });
+
+const videoObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    const video = entry.target;
+    if (entry.isIntersecting) {
+      if (!video.src) {
+        video.src = video.dataset.src;
+      }
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  });
+}, { rootMargin: "500px 0px" });
+
+document.querySelectorAll(".piece video").forEach((video) => videoObserver.observe(video));
 
 filters.forEach((filter) => {
   filter.addEventListener("click", () => {
@@ -132,6 +178,8 @@ filters.forEach((filter) => {
 gallery.addEventListener("click", (event) => {
   const piece = event.target.closest(".piece");
   if (!piece) return;
+
+  if (piece.dataset.type === "video") return;
 
   lightboxImage.src = piece.dataset.src;
   lightboxImage.alt = `${piece.dataset.title}, ${piece.dataset.projectLabel}`;
