@@ -62,7 +62,7 @@ const images = [
   ["start-left-security", "Start Left Security", "Start Left Security Film", "assets/videos/1920x1080_start_left_security_smaller.mp4", "wide", "video"],
   ["mane-cuts", "Mane Cuts", "Mane Cuts Singles", "assets/videos/4k_16x9_mane_cuts_singles_3_smaller_smaller.mp4", "wide", "video"],
   ["mane-cuts", "Mane Cuts", "Mane Cuts Story", "assets/videos/9x16_mane_cuts_singles_6_smaller.mp4", "tall", "video"],
-  ["roar-groove", "Roar Groove", "RGRV024 Story", "assets/videos/9x16_rgrv024_ig_story_smaller.mp4", "tall", "video", "assets/video-posters/9x16_rgrv024_ig_story_smaller.jpg"],
+  ["roar-groove", "Roar Groove", "RGRV024 Story", "assets/videos/9x16_rgrv024_ig_story_720p.m4v", "tall", "video", "assets/video-posters/9x16_rgrv024_ig_story_smaller.jpg"],
   ["home-page", "Home Page", "Home Page Hero", "assets/videos/1920x1080_home_page_hero_11_smaller.mp4", "wide", "video"],
 ];
 
